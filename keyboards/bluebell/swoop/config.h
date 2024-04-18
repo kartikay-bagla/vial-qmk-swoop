@@ -31,10 +31,10 @@
 //#define EE_HANDS
 
 // encoders
-#define ENCODERS_PAD_A { B4 }
-#define ENCODERS_PAD_B { B5 }
-#define ENCODERS_PAD_A_RIGHT { B5 }
-#define ENCODERS_PAD_B_RIGHT { B4 }
+//#define ENCODERS_PAD_A { B4 }
+//#define ENCODERS_PAD_B { B5 }
+//#define ENCODERS_PAD_A_RIGHT { B5 }
+//#define ENCODERS_PAD_B_RIGHT { B4 }
 
 // OLED driver
 #ifdef OLED_DRIVER_ENABLE
@@ -46,9 +46,9 @@
 #define RGB_DI_PIN D3
 #ifdef RGB_DI_PIN
   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
-  #define RGBLIGHT_EFFECT_RAINBOW_MOOD
-  #define RGBLIGHT_EFFECT_STATIC_GRADIENT
-  #define RGBLIGHT_EFFECT_BREATHING
+  //#define RGBLIGHT_EFFECT_RAINBOW_MOOD
+  //#define RGBLIGHT_EFFECT_STATIC_GRADIENT
+  //#define RGBLIGHT_EFFECT_BREATHING
   #define RGBLED_NUM 36
   #define RGBLED_SPLIT \
         { 18, 18 }
