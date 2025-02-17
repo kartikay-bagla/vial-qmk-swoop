@@ -26,7 +26,7 @@
 
 enum layers {
     _BASE,
-    _GAMING,
+    _QWERTY,
     _NAV,
     _MOUSE,
     _MEDIA,
@@ -34,11 +34,41 @@ enum layers {
     _FUN,
 };
 
+
 #define LT_NAV(x) LT(_NAV, x)
 #define LT_MSE(x) LT(_MOUSE, x)
 #define LT_MED(x) LT(_MEDIA, x)
 #define LT_NUM(x) LT(_NUM, x)
 #define LT_FUN(x) LT(_FUN, x)
+#define LT_QWR(x) LT(_QWERTY, x)
+
+
+// Define a type for as many tap dance states as you need
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum
+};
+
+// Declare the functions to be used with your tap dance key(s)
+
+// Function associated with all tap dances
+td_state_t cur_dance(tap_dance_state_t *state);
+
+// Functions associated with individual tap dances
+void ql_finished(tap_dance_state_t *state, void *user_data);
+void ql_reset(tap_dance_state_t *state, void *user_data);
 
 
 const key_override_t num_layer_shift_0_override = ko_make_with_layers(
@@ -63,17 +93,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,
     KC_K,           KC_H,           KC_COMM,        KC_DOT,         KC_SLSH,
                                     LT_MED(KC_ESC), LT_NAV(KC_TAB), LT_MSE(KC_SPC),
-    KC_ENT, LT_NUM(KC_BSPC),LT_FUN(KC_DEL)
+    TD(QUOT_LAYER), LT_NUM(KC_BSPC),LT_FUN(KC_DEL)
 ),
-[_GAMING] = LAYOUT_split_3x5_3(
-    KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,
-    KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
-    KC_LSFT,        KC_A,           KC_S,           KC_D,           KC_F,
-    KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
-    KC_LCTL,        KC_Z,           KC_X,           KC_C,           KC_V,
-    KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
-                                    KC_ESC,         KC_LALT,        KC_SPC,
-    TO(_BASE),    KC_NO,          KC_NO
+[_QWERTY] = LAYOUT_split_3x5_3(
+    KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,
+    KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,
+    MTLG(KC_A),     MTLA(KC_S),     MTLC(KC_D),     MTLS(KC_F),     KC_G,
+    KC_H,           MTRS(KC_J),     MTRC(KC_K),     MTRA(KC_L),     MTRG(KC_QUOT),
+    KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,
+    KC_N,           KC_M,           KC_COMM,        KC_DOT,         KC_SLSH,
+                                    LT_MED(KC_ESC), LT_NAV(KC_TAB), LT_MSE(KC_SPC),
+    TD(QUOT_LAYER), LT_NUM(KC_BSPC),LT_FUN(KC_DEL)
 ),
 [_NAV] = LAYOUT_split_3x5_3(
 //  redo,           paste,          copy,           cut,            undo
@@ -109,7 +139,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 [_NUM] = LAYOUT_split_3x5_3(
     KC_LBRC,        KC_7,           KC_8,           KC_9,           KC_RBRC,
-    KC_TRNS,        TO(_GAMING),      KC_TRNS,        KC_TRNS,        KC_TRNS,
+    KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_TRNS,
     KC_SCLN,        KC_4,           KC_5,           KC_6,           KC_EQL,
     KC_TRNS,        KC_LSFT,        KC_LCTL,        KC_LALT,        KC_LGUI,
     KC_GRV,         KC_1,           KC_2,           KC_3,           KC_BSLS,
@@ -126,17 +156,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_TRNS,
                                     KC_TRNS,        KC_TRNS,        KC_TRNS,
     KC_TRNS,        KC_TRNS,        KC_TRNS
-)
+),
 };
 
 #ifdef OLED_ENABLE
-const char _str_1[] PROGMEM = "q w f p b  j l u y '\na r s t g  m n e i o\nz x c d v  k h , . /\n ES TB SP  EN BK DL ";
-const char _str_2[] PROGMEM = "NOPE: __ __ __ __ __\nMVMT: CP LF DN UP RG\nBRUH: IN HO PG PG EN\n  ____  ____  ____  ";
-const char _str_3[] PROGMEM = "NOPE: __ __ __ __ __\nMOUS: __ LF DN UP RG\nSCWL: __ LF DN UP RG\n  LFMB  RGMB  MDMB  ";
-const char _str_4[] PROGMEM = "RGB : TG MD HU SA VA\nMEDI: __ PR VD VU NX\nBRIG: NK RW BD BU FF\n  MUTE  PLAY  STOP  ";
-const char _str_5[] PROGMEM = "NUM : [{ 7& 8* 9( ]}\nNUM : ;: 4$ 5% 6^ =+\nNUM : `~ 1! 2@ 3# \\|\nNUM : .( 0) -_     ";
-const char _str_6[] PROGMEM = "FUNC: 12 7 8 9 PRTSC\nFUNC: 11 4 5 6 SCRLK\nFUNC: 10 1 2 3 PAUSE\n  ____  ____  ____  ";
-const char _str_7[] PROGMEM = "tab  q w e r        \nshft a s d f        \nctrl z x c v        \nESC  LALT SPCE  BASE";
+const char _str_1[] PROGMEM = "q w f p b  j l u y '\na r s t g  m n e i o\nz x c d v  k h , . /\n ES TB SP  EN BK DL";
+const char _str_2[] PROGMEM = "NOPE: __ __ __ __ __\nMVMT: CP LF DN UP RG\nBRUH: IN HO PG PG EN\n  ____  ____  ____";
+const char _str_3[] PROGMEM = "NOPE: __ __ __ __ __\nMOUS: __ LF DN UP RG\nSCWL: __ LF DN UP RG\n  LFMB  RGMB  MDMB";
+const char _str_4[] PROGMEM = "RGB : TG MD HU SA VA\nMEDI: __ PR VD VU NX\nBRIG: NK RW BD BU FF\n  MUTE  PLAY  STOP";
+const char _str_5[] PROGMEM = "NUM : [{ 7& 8* 9( ]}\nNUM : ;: 4$ 5% 6^ =+\nNUM : `~ 1! 2@ 3# \\|\nNUM : .( 0) -_";
+const char _str_6[] PROGMEM = "FUNC: 12 7 8 9 PRTSC\nFUNC: 11 4 5 6 SCRLK\nFUNC: 10 1 2 3 PAUSE\n  ____  ____  ____";
+const char _str_7[] PROGMEM = "q w e r t  y u i o p\na s d f g  h j k l '\nz x c v b  n m , . /\n ES TB SP  EN BK DL";
 PGM_P const keymap_strings[] PROGMEM = {
     [_BASE] = _str_1,
     [_NAV] = _str_2,
@@ -144,7 +174,7 @@ PGM_P const keymap_strings[] PROGMEM = {
     [_MEDIA] = _str_4,
     [_NUM] = _str_5,
     [_FUN] = _str_6,
-    [_GAMING] = _str_7
+    [_QWERTY] = _str_7
 };
 const char undef_str[] PROGMEM = "UDF";
 
@@ -154,7 +184,7 @@ const char _layer_name_3[] PROGMEM = "MOUSE";
 const char _layer_name_4[] PROGMEM = "MEDIA";
 const char _layer_name_5[] PROGMEM = "NUMBERS";
 const char _layer_name_6[] PROGMEM = "FUNCTION";
-const char _layer_name_7[] PROGMEM = "GAMING";
+const char _layer_name_7[] PROGMEM = "QWERTY";
 PGM_P const layer_names[] PROGMEM = {
     [_BASE] = _layer_name_1,
     [_NAV] = _layer_name_2,
@@ -162,7 +192,7 @@ PGM_P const layer_names[] PROGMEM = {
     [_MEDIA] = _layer_name_4,
     [_NUM] = _layer_name_5,
     [_FUN] = _layer_name_6,
-    [_GAMING] = _layer_name_7
+    [_QWERTY] = _layer_name_7
 };
 
 const char gui_logo[] = {
@@ -213,9 +243,9 @@ void get_keymap_and_layer_str(uint8_t current_layer, const char** keymap_str, co
         *keymap_str = keymap_strings[_FUN];
         *layer_name_str = layer_names[_FUN];
         break;
-    case _GAMING:
-        *keymap_str = keymap_strings[_GAMING];
-        *layer_name_str = layer_names[_GAMING];
+    case _QWERTY:
+        *keymap_str = keymap_strings[_QWERTY];
+        *layer_name_str = layer_names[_QWERTY];
         break;
     default:
         *keymap_str = undef_str;
@@ -271,3 +301,67 @@ bool oled_task_user(void) {
     return false;
 }
 #endif
+
+
+// Determine the current tap dance state
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else return TD_UNKNOWN;
+}
+
+// Initialize tap structure associated with example tap dance key
+static td_tap_t ql_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+// Functions that control what our tap dance key does
+void ql_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            tap_code(KC_ENT);
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(_QWERTY);
+            break;
+        case TD_DOUBLE_TAP:
+            // Check to see if the layer is already set
+            if (layer_state_is(_QWERTY)) {
+                // If already set, then switch it off
+                layer_off(_QWERTY);
+            } else {
+                // If not already set, then switch the layer on
+                layer_on(_QWERTY);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_reset(tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(_QWERTY);
+    }
+    ql_tap_state.state = TD_NONE;
+}
+
+// Associate our tap dance key with its functionality
+tap_dance_action_t tap_dance_actions[] = {
+    [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset)
+};
+
+// Set a long-ish tapping term for tap-dance keys
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+            return 275;
+        default:
+            return TAPPING_TERM;
+    }
+}
